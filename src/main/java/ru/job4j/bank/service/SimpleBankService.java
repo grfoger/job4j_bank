@@ -22,24 +22,41 @@ public class SimpleBankService implements BankService{
     }
 
     @Override
-    public void addAccount(String passport, String requisite) {
-
+    public void addAccount(String passport, Account account) {
+        userRepository.findByPassport(passport).ifPresent(u -> {
+            account.setUser(u);
+            accountRepository.saveOrUpdate(account);
+            u.getAccounts().add(account);
+        });
     }
 
     @Override
     public Optional<User> findByPassport(String passport) {
-        return Optional.empty();
+        return userRepository.findByPassport(passport);
     }
 
     @Override
-    public Optional<Account> findByRequisite(String requisite) {
-        return Optional.empty();
+    public Optional<Account> findByRequisite(String passport, String requisite) {
+        return accountRepository.findByRequisite(passport, requisite);
     }
 
     @Override
     public boolean transferMoney(String srcPassport, String srcRequisite,
                                  String destPassport, String destRequisite,
                                  double amount) {
-        return false;
+        Optional<Account> srcAccount = findByRequisite(srcPassport, srcRequisite);
+        if (srcAccount.isEmpty()) {
+            return false;
+        }
+        Optional<Account> destAccount = findByRequisite(srcPassport, srcRequisite);
+        if (destAccount.isEmpty()) {
+            return false;
+        }
+        if (srcAccount.get().getBalance() - amount < 0) {
+            return false;
+        }
+        srcAccount.get().setBalance(srcAccount.get().getBalance() - amount);
+        destAccount.get().setBalance(destAccount.get().getBalance() + amount);
+        return true;
     }
 }
