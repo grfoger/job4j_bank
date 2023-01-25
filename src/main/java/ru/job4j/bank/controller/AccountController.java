@@ -1,7 +1,9 @@
 package ru.job4j.bank.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.bank.model.Account;
 import ru.job4j.bank.service.BankService;
 
@@ -23,6 +25,9 @@ public class AccountController {
 
     @GetMapping
     public Account findByRequisite(@RequestParam String passport, @RequestParam String requisite) {
-        return bankService.findByRequisite(passport, requisite).orElse(null);
+        return bankService.findByRequisite(passport, requisite)
+                .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Account is not found. Please check requisites."
+        ));
     }
 }
