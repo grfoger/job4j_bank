@@ -20,7 +20,7 @@ import static java.util.Map.entry;
 @AllArgsConstructor
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class.getSimpleName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class.getSimpleName());
     private final ObjectMapper objectMapper;
 
     @ExceptionHandler(value = {NullPointerException.class})
